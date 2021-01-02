@@ -6,5 +6,8 @@
 </head>
 <body>
 <h1>index page 111122</h1>
+<div th:each="recipe:  ${recipes}">
+    <p th:text="${recipe.description}"></p>
+</div>
 </body>
 </html>
