@@ -3,15 +3,14 @@ package com.recipe.app.recipeapp.controllers;
 import com.recipe.app.recipeapp.commands.RecipeCommand;
 import com.recipe.app.recipeapp.domain.Recipe;
 import com.recipe.app.recipeapp.service.RecipeService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 
 @RequestMapping("/recipe")
 @Controller
+@Slf4j
 public class RecipeController {
 
     private final RecipeService recipeService;
@@ -20,6 +19,7 @@ public class RecipeController {
         this.recipeService = recipeService;
     }
 
+    @GetMapping
     @RequestMapping("/{id}")
     public String showById(@PathVariable String id, Model model){
         model.addAttribute("recipe", recipeService.findById(Long.parseLong(id)));
@@ -27,9 +27,18 @@ public class RecipeController {
         return "recipe/show";
     }
 
+    @GetMapping
     @RequestMapping("/new")
     public String newRecipe(Model model){
         model.addAttribute("recipe", new RecipeCommand());
+
+        return "recipe/recipeForm";
+    }
+
+    @GetMapping
+    @RequestMapping("/update/{id}")
+    public String updateRecipe(@PathVariable String id,Model model){
+        model.addAttribute("recipe", recipeService.findRecipeCommandById(Long.valueOf(id)));
 
         return "recipe/recipeForm";
     }
@@ -40,5 +49,14 @@ public class RecipeController {
         RecipeCommand saveCommand = recipeService.saveRecipeCommand(command);
 
         return "redirect:/recipe/" + saveCommand.getId();
+    }
+
+    @GetMapping
+    @RequestMapping("/delete/{id}")
+    public String deleteById(@PathVariable String id){
+        log.debug("id - "+ id );
+        recipeService.deleteById(Long.valueOf(id));
+
+        return "redirect:/";
     }
 }

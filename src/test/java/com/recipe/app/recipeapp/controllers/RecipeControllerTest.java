@@ -18,7 +18,7 @@ import static org.hamcrest.Matchers.hasSize;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -47,7 +47,7 @@ class RecipeControllerTest {
 
         mockMvc.perform(get("/recipe/1"))
                 .andExpect(status().isOk())
-                .andExpect(view().name("recipe"))
+                .andExpect(view().name("recipe/show"))
                 .andExpect(model().attributeExists("recipe"));
     }
 
@@ -65,4 +65,27 @@ class RecipeControllerTest {
                 .andExpect(status().is3xxRedirection())
                 .andExpect(view().name("redirect:/recipe/2"));
     }
+
+    @Test
+    void getRecipeCommandByIdTest() throws Exception {
+        RecipeCommand command = new RecipeCommand();
+        command.setId(2L);
+
+        when(recipeService.findRecipeCommandById(anyLong())).thenReturn(command);
+
+        mockMvc.perform(get("/recipe/update/1"))
+                .andExpect(status().isOk())
+                .andExpect(model().attributeExists("recipe"))
+                .andExpect(view().name("recipe/recipeForm"));
+    }
+
+    @Test
+    void deleteRecipeByIdTest() throws Exception {
+        mockMvc.perform(get("/recipe/delete/1"))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(view().name("redirect:/"));
+
+        verify(recipeService, times(1)).deleteById(anyLong());
+    }
+
 }
