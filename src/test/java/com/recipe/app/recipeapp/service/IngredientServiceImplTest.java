@@ -7,6 +7,7 @@ import com.recipe.app.recipeapp.converters.UnitOfMeasureCommandToUnitOfMeasure;
 import com.recipe.app.recipeapp.converters.UnitOfMeasureToUnitOfMeasureCommand;
 import com.recipe.app.recipeapp.domain.Ingredient;
 import com.recipe.app.recipeapp.domain.Recipe;
+import com.recipe.app.recipeapp.domain.UnitOfMeasure;
 import com.recipe.app.recipeapp.repositories.RecipeRepository;
 import com.recipe.app.recipeapp.repositories.UnitOfMeasurRepository;
 import org.junit.jupiter.api.BeforeEach;

@@ -65,6 +65,6 @@ class RecipeServiceImplTest {
     void deleteRecipeTest(){
         Long deleteId = Long.valueOf(1L);
         recipeService.deleteById(deleteId);
-        verify(recipeService, times(1)).deleteById(anyLong());
+        verify(recipeRepository, times(1)).deleteById(anyLong());
     }
 }

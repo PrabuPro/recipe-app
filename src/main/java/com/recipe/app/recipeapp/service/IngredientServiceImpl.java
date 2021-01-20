@@ -69,9 +69,9 @@ public class IngredientServiceImpl implements IngredientService {
                             .orElseThrow(() -> new RuntimeException("UOM no found")));
             } else {
                 Ingredient ingredient = ingredientCommandToIngredient.convert(ingredientCommand);
-                log.debug("ingredient description" + ingredient.getDescription());
-                log.debug("ingredient amout" + ingredient.getAmount());
-                log.debug("ingredient uom" + ingredient.getUom().getId());
+//                log.debug("ingredient description" + ingredient.getDescription());
+//                log.debug("ingredient amout" + ingredient.getAmount());
+//                log.debug("ingredient uom" + ingredient.getUom().getId());
                 ingredient.setRecipe(recipe);
                 recipe.addIngredient(ingredient);
             }
