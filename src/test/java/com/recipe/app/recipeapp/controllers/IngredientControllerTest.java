@@ -16,6 +16,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.ui.Model;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -103,5 +104,24 @@ class IngredientControllerTest {
                 .andExpect(model().attributeExists("uomList"))
                 .andExpect(model().attributeExists("ingredient"));
 
+    }
+
+    @Test
+    void newIngredientTest() throws Exception {
+
+        when(unitOfMeasureService.listAllUoms()).thenReturn(new HashSet<>());
+
+        mockMvc.perform(get("/recipes/1/ingredient/new"))
+                .andExpect(status().isOk())
+                .andExpect(view().name("recipe/ingredient/ingredientform"))
+                .andExpect(model().attributeExists("ingredient"))
+                .andExpect(model().attributeExists("uomList"));
+    }
+
+    @Test
+    void deleteIngredientById() throws Exception {
+        mockMvc.perform(get("/recipes/1/ingredient/1/delete"))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(view().name("redirect:/recipe/ingredients/1"));
     }
 }

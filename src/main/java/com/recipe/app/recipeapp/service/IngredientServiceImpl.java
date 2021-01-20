@@ -7,10 +7,12 @@ import com.recipe.app.recipeapp.domain.Ingredient;
 import com.recipe.app.recipeapp.domain.Recipe;
 import com.recipe.app.recipeapp.repositories.RecipeRepository;
 import com.recipe.app.recipeapp.repositories.UnitOfMeasurRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
 
+@Slf4j
 @Service
 public class IngredientServiceImpl implements IngredientService {
 
@@ -48,6 +50,7 @@ public class IngredientServiceImpl implements IngredientService {
     @Override
     public IngredientCommand saveIngredientCommand(IngredientCommand ingredientCommand) {
         Optional<Recipe> recipeOptional = recipeRepository.findById(ingredientCommand.getRecipeId());
+        Ingredient lastIngredient;
 
         if(recipeOptional.isPresent()){
 
@@ -65,15 +68,29 @@ public class IngredientServiceImpl implements IngredientService {
                 ingredient.setUom(unitOfMeasurRepository.findById(ingredientCommand.getUom().getId())
                             .orElseThrow(() -> new RuntimeException("UOM no found")));
             } else {
-                recipe.addIngredient(ingredientCommandToIngredient.convert(ingredientCommand));
+                Ingredient ingredient = ingredientCommandToIngredient.convert(ingredientCommand);
+                log.debug("ingredient description" + ingredient.getDescription());
+                log.debug("ingredient amout" + ingredient.getAmount());
+                log.debug("ingredient uom" + ingredient.getUom().getId());
+                ingredient.setRecipe(recipe);
+                recipe.addIngredient(ingredient);
             }
 
             Recipe saveRecipe = recipeRepository.save(recipe);
 
-            return ingredientToIngredientCommand.convert(saveRecipe.getIngredient().stream()
+            Optional<Ingredient> saveIngredient = saveRecipe.getIngredient().stream()
                     .filter(ingredient -> ingredient.getId().equals(ingredientCommand.getId()))
-                    .findFirst()
-                    .get());
+                    .findFirst();
+
+            if(!saveIngredient.isPresent()){
+                saveIngredient = saveRecipe.getIngredient().stream()
+                        .filter(recipeIngredient -> recipeIngredient.getDescription().equals(ingredientCommand.getDescription()))
+                        .filter(recipeIngredient -> recipeIngredient.getAmount().equals(ingredientCommand.getAmount()))
+                        .filter(recipeIngredient -> recipeIngredient.getUom().getId().equals(ingredientCommand.getUom().getId()))
+                        .findFirst();
+            }
+
+            return ingredientToIngredientCommand.convert(saveIngredient.get());
 
         } else {
             return new IngredientCommand();
@@ -81,4 +98,28 @@ public class IngredientServiceImpl implements IngredientService {
 
 
     }
+
+    @Override
+    public void deleteIngredientById(Long recipeId, Long ingredientId) {
+        Optional<Recipe> optionalRecipe = recipeRepository.findById(recipeId);
+
+        if(optionalRecipe.isPresent()){
+            Recipe recipe = optionalRecipe.get();
+
+            Optional<Ingredient> ingredientOptional = recipe.getIngredient().stream()
+                                                        .filter(ingredient -> ingredient.getId().equals(ingredientId))
+                                                        .findFirst();
+
+            if(ingredientOptional.isPresent()){
+                Ingredient ingredient = ingredientOptional.get();
+                ingredient.setRecipe(null);
+                recipe.getIngredient().remove(ingredient);
+                recipeRepository.save(recipe);
+            }
+        } else {
+            log.debug("recipe Id not found" + recipeId);
+        }
+    }
+
+
 }

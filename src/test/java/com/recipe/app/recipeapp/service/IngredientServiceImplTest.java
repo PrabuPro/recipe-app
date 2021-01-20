@@ -31,6 +31,7 @@ class IngredientServiceImplTest {
     @Mock
     RecipeRepository recipeRepository;
 
+    @Mock
     IngredientService ingredientService;
 
     //init converters
@@ -95,5 +96,22 @@ class IngredientServiceImplTest {
         IngredientCommand saveCommand = ingredientService.saveIngredientCommand(command);
 
         assertEquals(Long.valueOf(2L), saveCommand.getId());
+    }
+
+    @Test
+    void deleteIngredientById(){
+        Recipe recipe = new Recipe();
+        Ingredient ingredient = new Ingredient();
+        ingredient.setId(1L);
+        ingredient.setRecipe(recipe);
+        recipe.addIngredient(ingredient);
+        Optional<Recipe> optionalRecipe = Optional.of(recipe);
+
+        when(recipeRepository.findById(anyLong())).thenReturn(optionalRecipe);
+
+        ingredientService.deleteIngredientById(1L, 1L);
+
+        verify(recipeRepository, times(1)).findById(anyLong());
+        verify(recipeRepository, times(1)).save(recipe);
     }
 }
