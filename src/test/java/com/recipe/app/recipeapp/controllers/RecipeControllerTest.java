@@ -2,6 +2,7 @@ package com.recipe.app.recipeapp.controllers;
 
 import com.recipe.app.recipeapp.commands.RecipeCommand;
 import com.recipe.app.recipeapp.domain.Recipe;
+import com.recipe.app.recipeapp.exceptions.NotFoundException;
 import com.recipe.app.recipeapp.service.RecipeService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -88,4 +89,15 @@ class RecipeControllerTest {
         verify(recipeService, times(1)).deleteById(anyLong());
     }
 
+    @Test
+    void getRecipeNotFound() throws Exception {
+        Recipe recipe = new Recipe();
+        recipe.setId(1L);
+
+        when(recipeService.findById(anyLong())).thenThrow(NotFoundException.class);
+
+        mockMvc.perform(get("/recipe/1"))
+                .andExpect(status().isNotFound());
+
+    }
 }
