@@ -39,7 +39,9 @@ class RecipeControllerTest {
     @BeforeEach
     void setUp() {
         recipe = Recipe.builder().id(1L).build();
-        mockMvc = MockMvcBuilders.standaloneSetup(controller).build();
+        mockMvc = MockMvcBuilders.standaloneSetup(controller)
+                .setControllerAdvice(new ControllerExceptionHandler())
+                .build();
     }
 
     @Test
@@ -117,7 +119,7 @@ class RecipeControllerTest {
     @Test
     void getRecipeNumberFormatException() throws Exception {
 
-        mockMvc.perform(get("/recipe/1"))
+        mockMvc.perform(get("/recipe/ss"))
                 .andExpect(status().isBadRequest())
                 .andExpect(view().name("400error"));
 
