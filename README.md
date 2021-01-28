@@ -1,3 +1,3 @@
-[![<ORG_NAME>](https://circleci.com/<VCS>/<ORG_NAME>/<PROJECT_NAME>.svg?style=svg)](<LINK>)
+[![PrabuPro](https://circleci.com/gh/PrabuPro/recipe-app.svg?style=svg)](https://app.circleci.com/pipelines/github/PrabuPro/recipe-app)
 # recipe-app
 a recipe app build with spring boot 
